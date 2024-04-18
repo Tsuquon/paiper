@@ -17,21 +17,44 @@ def get_clubs(clubs):
         
 # needs club name, description, membership cost
 def club_processing(clubs: list):
-    url = "https://usu.edu.au/clubs/wasabi-japanese-cultural/"
-    pattern = r">.*</"
+    club_data = []
+    cancel_num = 0
     
-    page_content = requests.get(url).content
-    soup = BeautifulSoup(page_content, "html.parser")
-    title = soup.find("h1", {"class": "Club-module--title--4dc7e"})
-    title = re.search(pattern, str(title)).group()[1:-2]
-    membership_fee = soup.find("div", {"class": "Club-module--fee--18235"})
-    membership_fee = int(re.search(r"\$\d", str(membership_fee)).group()[1:])
-    
-    description = soup.find("div", {"class": "Club-module--mainContainer--4e43a"})
-    description = description.find_all("p")
-    description = re.sub(r"</*p>,*", "\\n", str(description))[1:-1]
+    for url in clubs:
+        if cancel_num == 10:
+            break
+        # url = "https://usu.edu.au/clubs/wasabi-japanese-cultural/"
+        pattern = r">.*</"
+        
+        try:
+            page_content = requests.get(url).content
+        
+        except(ConnectionError):
+            print(f"Error connecting to {url}")   
+        
+        else:
+            
+            try:
+                soup = BeautifulSoup(page_content, "html.parser")
+                title = soup.find("h1", {"class": "Club-module--title--4dc7e"})
+                title = re.search(pattern, str(title)).group()[1:-2]
+                membership_fee = soup.find("div", {"class": "Club-module--fee--18235"})
+                membership_fee = re.search(r"(\$\d)|(Free)", str(membership_fee)).group()
+                membership_fee = 0 if membership_fee == "Free" else int(membership_fee[1:])
+                description = soup.find("div", {"class": "Club-module--mainContainer--4e43a"})
+                description = description.find_all("p")
+                description = re.sub(r"(</*p>,*)|(<strong>Want to join the fun\?.*</strong>)", "", str(description))[1:-1]
 
-    print(title, description, membership_fee)
+                # print(title, description, membership_fee)
+                # print(membership_fee)
+                club_data.append([title, description, membership_fee])
+                
+            except:
+                print(f"problem obtaining information from {url}")
+                
+        cancel_num += 1
+                
+    print(club_data)
         
 def get_events(events):
     events = [text for text in events if re.match("^https://usu.edu.au/events", text)]
@@ -51,7 +74,11 @@ def get_events(events):
 def main():
     
     url = "https://usu.edu.au/sitemap/sitemap-0.xml"
-    xml_data = requests.get(url).content    
+    try:
+        xml_data = requests.get(url).content    
+    except(ConnectionError):
+        print("Connection failed to usu website. Check connection")
+    
     soup = BeautifulSoup(xml_data, "xml")
     
     web_links = soup.find_all("loc")
