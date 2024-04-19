@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+from datetime import datetime
 
     # filter clubs
 def get_clubs(clubs):
@@ -11,8 +12,9 @@ def get_clubs(clubs):
     
     except(ValueError):
         print("Non-club websites not removed")
-        
-    club_processing(clubs)
+    
+    else:
+        club_processing(clubs)
         
         
 # needs club name, description, membership cost
@@ -67,8 +69,60 @@ def get_events(events):
     
     except(ValueError):
         print("Non-club websites not removed")
+    
+    else:
+        event_processing(events)
+
+def event_processing(events):
+    event_data = []
+    cancel_num = 0
+    
+    for url in events:
+        
+        if cancel_num == 10:
+            break
+    
+        try:
+            page_content = requests.get(url).content
+        
+        except(ConnectionError):
+            print(f"Error connecting to {url}")   
+            
+        else:
+            
+            # need event_name, club_name, start_date, end_date, price, description
+            # I've noticed events that say free aren't really free - will have to deal with this later, via AIing the desc
+            try:
+                soup = BeautifulSoup(page_content, "html.parser")
+                title = soup.find("div", {"class": "Events-module--title--5f77b"})
+                title = re.search("h1>.*</h1", str(title)).group()[3:-4]
+                club_name = soup.find("a", {"class": "club"})
+                club_name = re.search(">.*<", str(club_name)).group()[1:-1]
+                date = soup.find("div", {"class": "date-list"})
+                date = re.search(">.*<!", str(date)).group()[1:-2]
+                date = "0" + date if int(date.split(" ")[0]) < 10 else date
+                start_date = ' '.join(date.split(" ")[:4]) + f" {datetime.today().year}"
+                end_date = ' '.join(date.split(" ")[:2] + date.split(" ")[5:]) + f" {datetime.today().year}"
+                date_format = "%d %b %I:%M %p %Y"
+                start_date = datetime.strptime(start_date, date_format)
+                end_date = datetime.strptime(end_date, date_format)
+                description = soup.find("div", {"class": "main"})
+                description = str(description.find_all("p"))
+            
+            
+            except Exception as e:
+                print(e)
+                print(f"Problem obtaining information from {url}")   
+                
+            else:
+                event_data.append([club_name, title, start_date, end_date, description])
+                
+        cancel_num += 1
+            
+    print(event_data)
 
 
+            
 
 
 def main():
@@ -85,8 +139,8 @@ def main():
     pattern = r"(<loc>)|(</loc>)"
     web_links = [re.sub(pattern, "", str(text)) for text in web_links]
     
-    get_clubs(web_links)
-    # get_events(web_links)
+    # get_clubs(web_links)
+    get_events(web_links)
     
 
 if __name__ == "__main__":
