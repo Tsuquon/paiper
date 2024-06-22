@@ -1,40 +1,58 @@
+DROP TABLE IF EXISTS userPreferences CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS clubTags CASCADE;
+DROP TABLE IF EXISTS clubs CASCADE;
+DROP TABLE IF EXISTS eventTags CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS relatedTags CASCADE;
+DROP TABLE IF EXISTS tags;
+
+CREATE TABLE tags (
+    tag_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    tag VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE relatedTags (
+    tag_id INTEGER REFERENCES tags (tag_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    related_tag_id INTEGER REFERENCES tags (tag_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE events (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  start_date TIMESTAMP NOT NULL,
-  end_date TIMESTAMP NOT NULL,
-  location VARCHAR(255) NOT NULL,
-  price REAL,
-  tag VARCHAR(255) REFERENCES (tags.tag) -- this might not work; fix later
+    event_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_name VARCHAR(255) NOT NULL,
+    event_description TEXT,
+    event_start_date TIMESTAMP NOT NULL,
+    event_end_date TIMESTAMP NOT NULL,
+    event_location VARCHAR(255) NOT NULL,
+    event_price REAL
+);
+
+CREATE TABLE eventTags (
+    event_id INTEGER REFERENCES events (event_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    tag_id INTEGER REFERENCES tags (tag_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE clubs (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    tag VARCHAR(255) REFERENCES (tags.tag), -- this might not work; fix later
-    closest_tag_1 VARCHAR(255),
-    closest_tag_2 VARCHAR(255),
-    closest_tag_3 VARCHAR(255) -- TRY BETTER WAY TO STORE LIST OF TAGS
-)
+    club_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    club_name VARCHAR(255) NOT NULL,
+    club_description TEXT
+);
 
-CREATE TABLE tags (
-    id SERIAL PRIMARY KEY,
-    tag VARCHAR(255) NOT NULL,
-    closest_tag_1 VARCHAR(255),
-    closest_tag_2 VARCHAR(255),
-    closest_tag_3 VARCHAR(255) -- TRY BETTER WAY TO STORE LIST OF TAGS
-)
+CREATE TABLE clubTags (
+    club_id INTEGER REFERENCES clubs (club_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    tag_id INTEGER REFERENCES tags (tag_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    user_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    misc_information VARCHAR(2047),
-    preference_tag_1 VARCHAR(255),
-    preference_tag_2 VARCHAR(255),
-    preference_tag_3 VARCHAR(255) -- TRY BETTER WAY TO STORE LIST OF TAGS
-)
+    misc_information VARCHAR(2047)
+);
+
+CREATE TABLE userPreferences (
+    user_id INTEGER REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    tag_id INTEGER REFERENCES tags (tag_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
