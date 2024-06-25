@@ -9,7 +9,8 @@ class ScrapeFramework:
     @abstractmethod
     def process_clubs(self, clubs):
         raise NotImplementedError("Method not imported")
-    
+
+    # need event_name, club_name, start_date, end_date, price, description
     @abstractmethod
     def get_events(self, events):
         raise NotImplementedError("Method not imported")
