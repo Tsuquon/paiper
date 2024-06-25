@@ -20,10 +20,7 @@ class ScrapeMeetup(ScrapeFramework):
         for club in clubs:
             self.club_references.update({club["id"]: club["name"]})
             self.club_references.update({club["urlname"]: club["name"]})
-            club_data.append(club["name"], "Unable to retrieve", 0)
-            
-            
-            
+            club_data.append([club["name"], None, 0])            
    
     
     def process_clubs(self, clubs):
@@ -47,7 +44,7 @@ class ScrapeMeetup(ScrapeFramework):
                     name = "INVALID"
             try:
                 
-                event_data.append([event["title"], name, date, date, event["description"]])
+                event_data.append([event["title"], name, date, date, None, event["description"]])
                 
             except(KeyError):
                 print(f"invalid for {name}")

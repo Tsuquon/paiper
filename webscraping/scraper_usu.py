@@ -20,7 +20,7 @@ class ScrapeUSU(ScrapeFramework):
             
             
     # needs club name, description, membership cost
-    def club_processing(self, clubs: list):
+    def club_processing(self, clubs: list[str]):
         club_data = []
         cancel_num = 0
         
@@ -118,7 +118,7 @@ class ScrapeUSU(ScrapeFramework):
                     print(f"Problem obtaining information from {url}")   
                     
                 else:
-                    event_data.append([club_name, title, start_date, end_date, description])
+                    event_data.append([club_name, title, start_date, end_date, None, description])
                     
             cancel_num += 1
                 
@@ -140,7 +140,7 @@ class ScrapeUSU(ScrapeFramework):
         pattern = r"(<loc>)|(</loc>)"
         web_links = [re.sub(pattern, "", str(text)) for text in web_links]
         
-        # self.get_clubs(web_links)
+        self.get_clubs(web_links)
         self.get_events(web_links)
         
 
