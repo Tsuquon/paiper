@@ -6,8 +6,21 @@ from scrape_framework import ScrapeFramework
 
 class ScrapeUSU(ScrapeFramework):
     # filter clubs
-    def get_clubs(self, clubs):
-        clubs = [text for text in clubs if re.match("^https://usu.edu.au/clubs", text)]
+    def __init__(self) -> None:
+        url = "https://usu.edu.au/sitemap/sitemap-0.xml"
+        try:
+            xml_data = requests.get(url).content    
+        except(ConnectionError):
+            print("Connection failed to usu website. Check connection")
+        
+        soup = BeautifulSoup(xml_data, "xml")
+        
+        web_links = soup.find_all("loc")
+        pattern = r"(<loc>)|(</loc>)"
+        self.web_links = [re.sub(pattern, "", str(text)) for text in web_links]
+    
+    def get_clubs(self):
+        clubs = [text for text in self.web_links if re.match("^https://usu.edu.au/clubs", text)]
         try:
             clubs.remove("https://usu.edu.au/clubs/complaints/")
             clubs.remove("https://usu.edu.au/clubs/")
@@ -16,7 +29,7 @@ class ScrapeUSU(ScrapeFramework):
             print("Non-club websites not removed")
         
         else:
-            self.club_processing(clubs)
+            return self.club_processing(clubs)
             
             
     # needs club name, description, membership cost
@@ -51,7 +64,7 @@ class ScrapeUSU(ScrapeFramework):
 
                     # print(title, description, membership_fee)
                     # print(membership_fee)
-                    club_data.append([title, description, membership_fee])
+                    club_data.append((title, description, membership_fee))
                     
                 except:
                     print(f"problem obtaining information from {url}")
@@ -59,9 +72,10 @@ class ScrapeUSU(ScrapeFramework):
             cancel_num += 1
                     
         print(club_data)
+        return club_data
             
-    def get_events(self, events):
-        events = [text for text in events if re.match("^https://usu.edu.au/events", text)]
+    def get_events(self):
+        events = [text for text in self.web_links if re.match("^https://usu.edu.au/events", text)]
         # print(events)
         
         try:
@@ -73,7 +87,7 @@ class ScrapeUSU(ScrapeFramework):
             print("Non-club websites not removed")
         
         else:
-            self.event_processing(events)
+            return self.event_processing(events)
 
     def event_processing(self, events):
         event_data = []
@@ -118,32 +132,16 @@ class ScrapeUSU(ScrapeFramework):
                     print(f"Problem obtaining information from {url}")   
                     
                 else:
-                    event_data.append([club_name, title, start_date, end_date, None, description])
+                    event_data.append((club_name, title, start_date, end_date, None, description))
                     
             cancel_num += 1
                 
         print(event_data)
-        print(len(event_data))
+        # print(len(event_data))
+        return event_data
 
-
-    def main(self):
-        
-        url = "https://usu.edu.au/sitemap/sitemap-0.xml"
-        try:
-            xml_data = requests.get(url).content    
-        except(ConnectionError):
-            print("Connection failed to usu website. Check connection")
-        
-        soup = BeautifulSoup(xml_data, "xml")
-        
-        web_links = soup.find_all("loc")
-        pattern = r"(<loc>)|(</loc>)"
-        web_links = [re.sub(pattern, "", str(text)) for text in web_links]
-        
-        self.get_clubs(web_links)
-        self.get_events(web_links)
-        
 
 if __name__ == "__main__":
     USU_scraper = ScrapeUSU()
-    USU_scraper.main()
+    USU_scraper.get_clubs()
+    USU_scraper.get_events()
