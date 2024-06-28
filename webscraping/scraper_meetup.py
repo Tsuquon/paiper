@@ -4,6 +4,7 @@ import requests
 import re
 import json
 from datetime import datetime
+from tqdm import tqdm
 
 
 class ScrapeMeetup(ScrapeFramework):
@@ -16,7 +17,7 @@ class ScrapeMeetup(ScrapeFramework):
         try:
             website_data = requests.get(url).content    
         except(ConnectionError):
-            print("Connection failed to usu website. Check connection")
+            print("Connection failed to meetup website. Check connection")
         
         soup = BeautifulSoup(website_data, "xml")
         extract = soup.find("script", {"id": "__NEXT_DATA__"})
@@ -40,16 +41,25 @@ class ScrapeMeetup(ScrapeFramework):
     # club name, description, membership cost
     # I think joining clubs are free
     def get_clubs(self):
+        
+        # need to get meetup description here 
                 
         club_data = []
         
-        for club in self.clubs:
+        for club in tqdm(self.clubs, desc="updating club dictionary"):
             self.club_references.update({club["id"]: club["name"]})
-            self.club_references.update({club["urlname"]: club["name"]})
-            club_data.append((club["name"], None, 0))
+            self.club_name_references.update({club["urlname"]: club["name"]})
+            
+            club_data.append((club["name"], self.get_description(club), 0))
             
         return club_data         
    
+    def get_description(self, club):
+       url = "https://www.meetup.com/" + club["urlname"]
+       group_page = requests.get(url).content
+       soup = BeautifulSoup(group_page, "html.parser")
+       description = soup.find("p", {"class": "mb-4"})
+       return description
 
     # events free too?
     def get_events(self):
@@ -63,7 +73,7 @@ class ScrapeMeetup(ScrapeFramework):
                 name = self.club_references.get((event["group"]["__ref"]).split(":")[1])
             except(KeyError):
                 try:
-                    name = self.club_references.get((event["group"]["urlname"]))
+                    name = self.club_name_references.get((event["group"]["urlname"]))
                 except(KeyError):
                     print(f"Invalid __ref and urlname for event")
                     name = "INVALID"
@@ -80,5 +90,5 @@ class ScrapeMeetup(ScrapeFramework):
         
 if __name__ == "__main__":
     scrape_meetup = ScrapeMeetup()
-    scrape_meetup.get_clubs()
-    scrape_meetup.get_events()
+    print(scrape_meetup.get_clubs())
+    # scrape_meetup.get_events()
