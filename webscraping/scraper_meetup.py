@@ -91,4 +91,4 @@ class ScrapeMeetup(ScrapeFramework):
 if __name__ == "__main__":
     scrape_meetup = ScrapeMeetup()
     print(scrape_meetup.get_clubs())
-    # scrape_meetup.get_events()
+    scrape_meetup.get_events()
