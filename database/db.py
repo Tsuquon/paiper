@@ -46,6 +46,21 @@ def retrieveUsers(connection_string):
 
     connection.close()
 
+def retrieveEvents(connection_string):
+    engine = create_engine(connection_string)
+    connection = engine.connect()
+
+    sql_query = text("SELECT * FROM events")
+
+    result = connection.execute(sql_query)
+
+    for row in result:
+        print(row)  # This will print each row as a tuple
+
+    print("---RESULTS PRINTED---")
+
+    connection.close()
+
 def createNewUser(connection_string, user_data, user_preferences):
     row = {
         "email": user_data["email"],
@@ -93,8 +108,9 @@ def return_connection_string():
     return connection_string
 
 if __name__ == "__main__":
-    
-    createNewUser(connection_string, user_data, user_preferences)
+    # createNewUser(connection_string, user_data, user_preferences)
+    retrieveUsers(connection_string)
+    retrieveEvents(connection_string)
 
 
 """
