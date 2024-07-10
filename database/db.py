@@ -3,6 +3,22 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
+
+# example data
+user_data = {
+    'email': 'johndoe@example.com',
+    'password': 'password',
+    'first_name': 'John',
+    'last_name': 'Doe',
+    'misc_information': ''
+}
+
+user_preferences = ["LAW", "ECONOMICS"]
+
+# ---------------------------------- #
+
+# Always runs
+
 load_dotenv()
 
 username = os.getenv('DB_USERNAME')
@@ -12,6 +28,8 @@ port = os.getenv('DB_PORT')
 database_name = os.getenv('DB_NAME')
 
 connection_string = f'postgresql://{username}:{password}@{host}:{port}/{database_name}'
+
+# ---------------------------------- #
 
 def retrieveUsers(connection_string):
     engine = create_engine(connection_string)
@@ -69,18 +87,14 @@ def createNewUser(connection_string, user_data, user_preferences):
 
     connection.commit()
     connection.close()
+    
+    
+def return_connection_string():
+    return connection_string
 
-user_data = {
-    'email': 'johndoe@example.com',
-    'password': 'password',
-    'first_name': 'John',
-    'last_name': 'Doe',
-    'misc_information': ''
-}
-
-user_preferences = ["LAW", "ECONOMICS"]
-
-createNewUser(connection_string, user_data, user_preferences)
+if __name__ == "__main__":
+    
+    createNewUser(connection_string, user_data, user_preferences)
 
 
 """
