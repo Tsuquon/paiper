@@ -31,7 +31,7 @@ connection_string = f'postgresql://{username}:{password}@{host}:{port}/{database
 
 # ---------------------------------- #
 
-def retrieveUsers(connection_string):
+def retrieve_users(connection_string):
     engine = create_engine(connection_string)
     connection = engine.connect()
 
@@ -46,7 +46,7 @@ def retrieveUsers(connection_string):
 
     connection.close()
 
-def retrieveEvents(connection_string):
+def retrieve_events(connection_string):
     engine = create_engine(connection_string)
     connection = engine.connect()
 
@@ -61,7 +61,7 @@ def retrieveEvents(connection_string):
 
     connection.close()
 
-def createNewUser(connection_string, user_data, user_preferences):
+def create_new_user(connection_string, user_data, user_preferences):
     row = {
         "email": user_data["email"],
         "password": user_data["password"],
@@ -109,8 +109,8 @@ def return_connection_string():
 
 if __name__ == "__main__":
     # createNewUser(connection_string, user_data, user_preferences)
-    retrieveUsers(connection_string)
-    retrieveEvents(connection_string)
+    retrieve_users(connection_string)
+    retrieve_events(connection_string)
 
 
 """
