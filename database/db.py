@@ -102,7 +102,34 @@ def create_new_user(connection_string, user_data, user_preferences):
 
     connection.commit()
     connection.close()
-    
+
+def create_new_event(connection_string, event_data):
+    row = {
+        "event_name": event_data["event_name"],
+        "event_description": event_data["event_description"],
+        "event_start_date": event_data["event_start_date"],
+        "event_end_date": event_data["event_end_date"],
+        "event_location": event_data["event_location"],
+        "event_price": event_data["event_price"]
+    }
+
+    engine = create_engine(connection_string)
+    connection = engine.connect()
+
+    sql_query = text("INSERT INTO events (event_name, event_description, event_start_date, event_end_date, event_location, event_price) VALUES (:event_name, :event_description, :event_start_date, :event_end_date, :event_location, :event_price)")
+    connection.execute(sql_query, row)
+
+    sql_query = text("SELECT event_id FROM events WHERE event_name = :event_name")
+    result = connection.execute(sql_query, row)
+
+    event_id_row = result.fetchone()
+    if not event_id_row:
+        print("Error: event not created.")
+        connection.close()
+        return
+
+    connection.commit()
+    connection.close()
     
 def return_connection_string():
     return connection_string
