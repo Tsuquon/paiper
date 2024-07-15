@@ -1,6 +1,8 @@
-import db
+import db, sys, os
 import random
 import datetime
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../webscraping")
+import scraper_usu
 
 usu_events = [
     ('Film Society', 'Semester 2 Opening Night Screening', datetime.datetime(2024, 7, 31, 16, 30), datetime.datetime(2024, 7, 31, 21, 0), None, "The University of Sydney's Film Society (FilmSoc) is holding their opening night screening for Semester 2 at Old Geology Lecture Theatre on the 31st of July 2024! We will be screening <em>Om Shanti Om</em> (2007), a Bollywood film from director Farah Khan. The event is open to all FilmSoc members for free and there will also be free pizza!"), 

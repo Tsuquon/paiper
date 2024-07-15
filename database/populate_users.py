@@ -57,7 +57,7 @@ def populate_users():
     "misc_information": "random information"
     }
     
-    user_preferences = interests[random.randrange(0, len(user_preferences))]
+    user_preferences = interests[random.randrange(0, len(interests))]
     db.create_new_user(connection_string, row, user_preferences)
     
 
@@ -69,8 +69,8 @@ def main():
     for _ in range(16):
         try:
             populate_users()
-        except(Exception) as e:
-            print(e)
+        except(TypeError) as e:
+            pass
 
     
     
