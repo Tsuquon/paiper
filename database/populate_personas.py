@@ -13,3 +13,6 @@ id_5_2 = [5, 41, 2]
 
 id_5_agg = [id_5_0, id_5_1, id_5_2]
 
+# likes computers
+
+id_6_0 = []
