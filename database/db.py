@@ -55,7 +55,7 @@ def retrieve_events(connection_string):
     result = connection.execute(sql_query)
 
     for row in result:
-        print(row)  # This will print each row as a tuple
+        print(row[0],row[1])  # This will print each row as a tuple
 
     print("---RESULTS PRINTED---")
 
