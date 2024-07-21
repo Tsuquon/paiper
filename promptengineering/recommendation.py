@@ -82,7 +82,7 @@ df.columns = ['user', 'item', 'rating']
 
 # ASSUME THAT WE HAVE A DATAFRAME OF M*N x 3 (user, item, rating), assign a rating of 3 if user is interested in tags of the event, and 5 if the user has been to the event
 
-dls = CollabDataLoaders.from_df(df['rating'], item_name='item', bs=64) # item column name must be item
+dls = CollabDataLoaders.from_df(df, item_name='item', bs=64) # item column name must be item
 
 n_users = len(dls.classes['user'])
 n_items = len(dls.classes['item'])
@@ -123,11 +123,11 @@ learn.fit_one_cycle(epochs, lr)
 ####### PREDICTION #######
 
 
-user_emb = model.user_factors.weight.detach().numpy()
-user_bias = model.user_bias.weight.detach().numpy()
+user_emb = model.user_factors.weight.detach().cpu().numpy()
+user_bias = model.user_bias.weight.detach().cpu().numpy()
 
-item_emb = model.item_factors.weight.detach().numpy()
-item_bias = model.item_bias.weight.detach().numpy()
+item_emb = model.item_factors.weight.detach().cpu().numpy()
+item_bias = model.item_bias.weight.detach().cpu().numpy()
     
     
 def predict(prediction_embedding, prediction_bias, item_emb, item_bias, n_recommendations, y_range=input_range):
