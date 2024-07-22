@@ -55,5 +55,5 @@ all_users_agg = [
 import pandas
 
 pd = pandas.DataFrame(all_users_agg)
-pd.columns = []
+pd.columns = ['user', 'item', 'rating']
 print(pd)

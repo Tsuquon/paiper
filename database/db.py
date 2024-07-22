@@ -131,13 +131,45 @@ def create_new_event(connection_string, event_data):
     connection.commit()
     connection.close()
     
+def retrieve_user_preferences(connection_string, user_id):
+    engine = create_engine(connection_string)
+    connection = engine.connect()
+
+    sql_query = text("""
+    SELECT t.tag
+    FROM userPreferences up
+    JOIN tags t ON up.tag_id = t.tag_id
+    WHERE up.user_id = :user_id
+    """)
+
+    result = connection.execute(sql_query, {"user_id": user_id})
+
+    preferences = [row[0] for row in result]
+    
+    connection.close()
+    return preferences
+
+def retrieve_user_additional_info(connection_string, user_id):
+    engine = create_engine(connection_string)
+    connection = engine.connect()
+
+    sql_query = text("SELECT misc_information FROM users WHERE user_id = :user_id")
+    
+    result = connection.execute(sql_query, {"user_id": user_id})
+    
+    # additional_info = result.fetchone()[0] if result.fetchone() else None
+    
+    connection.close()
+    return result
+    
 def return_connection_string():
     return connection_string
 
 if __name__ == "__main__":
     # createNewUser(connection_string, user_data, user_preferences)
     retrieve_users(connection_string)
-    retrieve_events(connection_string)
+    # retrieve_events(connection_string)
+    print(retrieve_user_preferences(connection_string, 3))
 
 
 """
