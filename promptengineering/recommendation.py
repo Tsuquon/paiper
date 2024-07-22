@@ -82,7 +82,7 @@ df.columns = ['user', 'item', 'rating']
 
 # ASSUME THAT WE HAVE A DATAFRAME OF M*N x 3 (user, item, rating), assign a rating of 3 if user is interested in tags of the event, and 5 if the user has been to the event
 
-dls = CollabDataLoaders.from_df(df, item_name='item', bs=64) # item column name must be item
+dls = CollabDataLoaders.from_df(df, item_name='item', bs=4) # item column name must be item
 
 n_users = len(dls.classes['user'])
 n_items = len(dls.classes['item'])
@@ -158,9 +158,11 @@ def predict(prediction_embedding, prediction_bias, item_emb, item_bias, n_recomm
     # getting only the keys
     recommentation_list = dict(recommentation_list)
     recommentation_list = sorted(recommentation_list, key=recommentation_list.get, reverse=True)
+    
+    # returning list of actual predictions from dataloader
+    events = dls.classes['item']
+    recommentation_list = [events[i] for i in recommentation_list]
     return recommentation_list
-
-
     
 #### SAMPLE USAGE ##############
 
