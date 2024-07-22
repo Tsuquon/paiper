@@ -126,7 +126,7 @@ class ScrapeUSU(ScrapeFramework):
         
         for url in events:
             
-            if cancel_num == 30:
+            if cancel_num == 50:
                 break
         
             try:
@@ -184,5 +184,5 @@ class ScrapeUSU(ScrapeFramework):
 
 if __name__ == "__main__":
     USU_scraper = ScrapeUSU()
-    USU_scraper.get_clubs()
+    # USU_scraper.get_clubs()
     USU_scraper.get_events()

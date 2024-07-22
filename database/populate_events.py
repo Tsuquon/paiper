@@ -29,6 +29,7 @@ for event in usu_events:
 for event in meetup_events:
     event_data = {}
     event_data["event_name"] = event[0]
+    event_data[""]
     event_data["event_start_date"] = event[2]
     event_data["event_end_date"] = event[3]
     event_data["event_description"] = event[5]
