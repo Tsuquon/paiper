@@ -168,7 +168,7 @@ def return_connection_string():
 if __name__ == "__main__":
     # createNewUser(connection_string, user_data, user_preferences)
     retrieve_users(connection_string)
-    # retrieve_events(connection_string)
+    retrieve_events(connection_string)
     print(retrieve_user_preferences(connection_string, 3))
 
 
