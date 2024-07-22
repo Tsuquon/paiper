@@ -88,14 +88,45 @@ class ScrapeUSU(ScrapeFramework):
         
         else:
             return self.event_processing(events)
+        
+    def convert_date_time_range(self, date_time_range):
+        # Split the date and time range into parts
+        dates, times = date_time_range[:len(date_time_range)//2 - 1], date_time_range[len(date_time_range)//2 - 1:]
+        start_date_str, end_date_str = dates.split(' - ')
+        start_time_str, end_time_str = times.split(' to ')
+
+        # Assuming the year is 2024
+        year = 2024
+
+        # Combine dates and times with year
+        start_datetime_str = f"{start_date_str} {start_time_str} {year}"
+        print(start_datetime_str)
+        end_datetime_str = f"{end_date_str} {end_time_str} {year}"
+        print(end_datetime_str)
+
+        # Convert to datetime objects
+        date_format = "%d %b %I:%M %p %Y"
+        try:
+            start_datetime = datetime.strptime(start_datetime_str, date_format)
+        except Exception:
+            date_format = "%I %M %p %Y"
+            start_datetime = datetime.strptime(start_datetime_str, date_format)
+        date_format = "%d %b %I:%M %p %Y"
+        end_datetime = datetime.strptime(end_datetime_str, date_format)
+
+
+        return start_datetime, end_datetime
 
     def event_processing(self, events):
+        
+
+        
         event_data = []
         cancel_num = 0
         
         for url in events:
             
-            if cancel_num == 10:
+            if cancel_num == 30:
                 break
         
             try:
@@ -117,11 +148,21 @@ class ScrapeUSU(ScrapeFramework):
                     date = soup.find("div", {"class": "date-list"})
                     date = re.search(">.*<!", str(date)).group()[1:-2]
                     date = "0" + date if int(date.split(" ")[0]) < 10 else date
-                    start_date = ' '.join(date.split(" ")[:4]) + f" {datetime.today().year}"
-                    end_date = ' '.join(date.split(" ")[:2] + date.split(" ")[5:]) + f" {datetime.today().year}"
-                    date_format = "%d %b %I:%M %p %Y"
-                    start_date = datetime.strptime(start_date, date_format)
-                    end_date = datetime.strptime(end_date, date_format)
+                    if '-' not in date:
+                        print("DATE IS",date)
+                        start_date = ' '.join(date.split(" ")[:4]) + f" {datetime.today().year}"
+                        print("START IS", start_date)
+                        end_date = ' '.join(date.split(" ")[:2] + date.split(" ")[5:]) + f" {datetime.today().year}"
+                        print("END IS", end_date)
+                        date_format = "%d %b %I:%M %p %Y"
+                        start_date = datetime.strptime(start_date, date_format)
+                        end_date = datetime.strptime(end_date, date_format)
+            
+
+                    else:
+                        start_date, end_date = self.convert_date_time_range(date)
+                    
+
                     description = soup.find("div", {"class": "main"})
                     description = str(description.find_all("p"))
                     description = re.sub(r"(</*p>,*)|(<strong>Want to join the fun\?.*</strong>)", "", str(description))[1:-1]
