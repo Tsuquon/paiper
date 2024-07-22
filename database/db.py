@@ -53,13 +53,14 @@ def retrieve_events(connection_string):
     sql_query = text("SELECT * FROM events")
 
     result = connection.execute(sql_query)
-
+    my_list = []
     for row in result:
-        print(row[0],row[1])  # This will print each row as a tuple
+        my_list.append((row[0],row[1],row[2]),)  
+        print(row[0],row[1],row[2])  # This will print each row as a tuple
 
     print("---RESULTS PRINTED---")
-
     connection.close()
+    return my_list    
 
 def create_new_user(connection_string, user_data, user_preferences):
     row = {
@@ -105,6 +106,7 @@ def create_new_user(connection_string, user_data, user_preferences):
 
 def create_new_event(connection_string, event_data):
     row = {
+        "event_host": event_data["event_host"],
         "event_name": event_data["event_name"],
         "event_description": event_data["event_description"],
         "event_start_date": event_data["event_start_date"],
@@ -116,7 +118,7 @@ def create_new_event(connection_string, event_data):
     engine = create_engine(connection_string)
     connection = engine.connect()
 
-    sql_query = text("INSERT INTO events (event_name, event_description, event_start_date, event_end_date, event_location, event_price) VALUES (:event_name, :event_description, :event_start_date, :event_end_date, :event_location, :event_price)")
+    sql_query = text("INSERT INTO events (event_host, event_name, event_description, event_start_date, event_end_date, event_location, event_price) VALUES (:event_host, :event_name, :event_description, :event_start_date, :event_end_date, :event_location, :event_price)")
     connection.execute(sql_query, row)
 
     sql_query = text("SELECT event_id FROM events WHERE event_name = :event_name")
@@ -158,7 +160,7 @@ def retrieve_user_additional_info(connection_string, user_id):
     result = connection.execute(sql_query, {"user_id": user_id})
     
     # additional_info = result.fetchone()[0] if result.fetchone() else None
-    
+    result = result.fetchall()
     connection.close()
     return result
     
