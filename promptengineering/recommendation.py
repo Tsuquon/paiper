@@ -166,7 +166,7 @@ def predict(prediction_embedding, prediction_bias, item_emb, item_bias, n_recomm
     
 #### SAMPLE USAGE ##############
 
-user_idx = 0
+user_idx = 3
 predictions = predict(user_emb[user_idx], user_bias[user_idx], item_emb, item_bias, 10)
 
 print(predictions)
