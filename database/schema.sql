@@ -19,6 +19,7 @@ CREATE TABLE relatedTags (
 
 CREATE TABLE events (
     event_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	event_host VARCHAR(255) NOT NULL,
     event_name VARCHAR(255) NOT NULL,
     event_description TEXT,
     event_start_date TIMESTAMP NOT NULL,
